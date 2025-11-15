@@ -50,6 +50,8 @@ pe_mean = pe_matrix.mean(axis=0)
 pe_sd = pe_matrix.std(axis=0)
 
 plt.plot(pe_mean, color="black")
+plt.plot(pe_mean + pe_sd, color="black", linestyle="dashed")
+plt.plot(pe_mean - pe_sd, color="black", linestyle="dashed")
 plt.ylim(0.75, 1.0)
 
 plt.xlabel("Average number of terms")
