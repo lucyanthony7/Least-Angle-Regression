@@ -9,15 +9,17 @@ np.random.seed(42)
 
 X, y = load_diabetes(return_X_y=True)
 
+# Create quadratic model with 64 predictors
 X_64 = np.zeros((442, 64), dtype=np.float64)
-X_64[:, :10] = X
-X_64[:, 19:64] = np.column_stack([X[:, i]*X[:, j] for i, j in combinations(range(10), 2)])
-X_64[:, 10:19] = np.column_stack([X[:, i]**2 for i in range(10) if i != 1])
-X_64 -= np.mean(X_64, axis=0)
-X_64 /= np.sqrt((X_64**2).sum(axis=0))
+X_64[:, :10] = X  # 10 main effects
+X_64[:, 19:64] = np.column_stack([X[:, i]*X[:, j] for i, j in combinations(range(10), 2)])  # 45 interactions
+X_64[:, 10:19] = np.column_stack([X[:, i]**2 for i in range(10) if i != 1])  # 9 square (skip x_2)
+X_64 -= np.mean(X_64, axis=0)  # Centre data
+X_64 /= np.sqrt((X_64**2).sum(axis=0))  # Scale data s.t. L2 norm is 1
 
 y -= np.mean(y)
 
+# Run initial regression with 10 steps, these are our "true mean" coefficients
 reg = Lars(n_nonzero_coefs=10, fit_intercept=False)
 reg.fit(X_64, y)
 
@@ -31,6 +33,7 @@ K = 40
 
 pe_matrix = np.zeros((n_sims, K))
 
+#  Run bootstrapping
 for s in range(n_sims):
     e_star = np.random.choice(e, size=n, replace=True)
     y_star = e_star + mu
