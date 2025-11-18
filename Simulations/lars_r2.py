@@ -21,10 +21,10 @@ y -= np.mean(y)
 
 # Run initial regression with 10 steps, these are our "true mean" coefficients
 reg = Lars(n_nonzero_coefs=10, fit_intercept=False)
-reg.fit(X_64, y)
+reg.fit(X, y)
 
 beta_true = reg.coef_.copy()
-mu = X_64 @ beta_true
+mu = X @ beta_true
 e = y - mu
 
 n = len(y)
@@ -52,14 +52,17 @@ for s in range(n_sims):
 pe_mean = pe_matrix.mean(axis=0)
 pe_sd = pe_matrix.std(axis=0)
 
-plt.plot(pe_mean, color="black")
-plt.plot(pe_mean + pe_sd, color="black", linestyle="dashed")
-plt.plot(pe_mean - pe_sd, color="black", linestyle="dashed")
-plt.ylim(0.75, 1.0)
+plt.rcParams.update({'font.size': 16})
+fig, ax = plt.subplots(figsize=(8, 6), tight_layout=True)
 
-plt.xlabel("Average number of terms")
-plt.ylabel("Proportion explained")
+ax.plot(pe_mean, color="black")
+ax.plot(pe_mean + pe_sd, color="black", linestyle="dashed")
+ax.plot(pe_mean - pe_sd, color="black", linestyle="dashed")
+ax.set_ylim(0.75, 1.0)
 
-plt.show()
+ax.set_xlabel("Average number of terms")
+ax.set_ylabel("Proportion explained")
+
+plt.savefig("figures/lars_pe.pdf")
 
 
